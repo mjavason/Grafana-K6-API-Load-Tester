@@ -36,7 +36,7 @@ function loginSuccess() {
 function loginFail() {
   const payload = JSON.stringify({
     email: 'testerzero@gmail.com',
-    password: 'WrongPassword123',
+    password: 'Wrong@password123',
   });
 
   const params = {
@@ -46,7 +46,6 @@ function loginFail() {
   };
 
   const res = http.post(`${apiUrl}/api/v1/auth/sign_in`, payload, params);
-
   check(res, {
     'Failed login status 401': (r) => r.status === 401,
   });
@@ -54,7 +53,9 @@ function loginFail() {
 //#endregion
 
 //#region Test Options and Main Function
-export const options = {
+
+// Regular load test configuration - ramp up to active users and sustain for 2 minutes
+export const regularOptions = {
   stages: [
     { duration: '30s', target: Math.ceil(activeUsers / 4) },
     { duration: '30s', target: Math.ceil(activeUsers / 2) },
@@ -65,7 +66,22 @@ export const options = {
     { duration: '30s', target: 0 },
   ],
   thresholds: {
-    http_req_failed: [`rate<${errorThreshold}`],
+    checks: [`rate<${errorThreshold}`],
+    http_req_duration: [`p(${responseTimeThreshold})<${averageResponseTime}`],
+  },
+};
+
+// Stress test configuration - ramp up to 5x active users and sustain for 1 minute
+export const options = {
+  stages: [
+    { duration: '1m', target: Math.ceil(activeUsers * 2) },
+    { duration: '1m', target: Math.ceil(activeUsers * 3) },
+    { duration: '1m', target: Math.ceil(activeUsers * 4) },
+    { duration: '1m', target: Math.ceil(activeUsers * 5) },
+    { duration: '1m', target: 0 },
+  ],
+  thresholds: {
+    checks: [`rate<${errorThreshold}`],
     http_req_duration: [`p(${responseTimeThreshold})<${averageResponseTime}`],
   },
 };
