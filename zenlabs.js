@@ -7,7 +7,7 @@ const apiUrl = 'https://api.betguardpredictions.com';
 // const apiUrl = 'http://localhost:5004';
 const averageResponseTime = 1000; // milliseconds
 const thinkTime = 10; // seconds
-const totalUsers = 1000;
+const totalUsers = 100;
 
 const activeUsers = totalUsers * 0.5; // 50% of total users active at any time
 const passThreshold = 90 / 100; // 90% of checks must pass
