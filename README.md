@@ -5,6 +5,13 @@ A simple demonstration of API loading testing with Grafana K6
 **Prerequisites**
 
 - Node.js and npm (or yarn) installed on your system. You can download them from the [official Node.js website](https://nodejs.org).
+- Grafana K6
+- Active Users: 25% of total estimated users. If you're expecting 100 total users. 25 is a good estimate
+- Average Request Duration
+- Think Time: The delay between actions of a real user in seconds (sleep)
+- Virtual Users/Machines = activeUsers * (avgReqDuration / thinkTime) 
+- Copy the dynamic.js file and fill in the necessary variables
+- run the file `k6 ./file_name.js`
 
 **Installation**
 
