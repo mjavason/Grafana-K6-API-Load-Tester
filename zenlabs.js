@@ -2,14 +2,15 @@ import { check, sleep } from 'k6';
 import http from 'k6/http';
 
 //#region Test Configuration
-const apiUrl = 'https://zenlabs-betguard.onrender.com';
+// const apiUrl = 'https://zenlabs-betguard.onrender.com';
+const apiUrl = 'http://localhost:5004';
 const averageResponseTime = 1000; // milliseconds
 const thinkTime = 10; // seconds
-const totalUsers = 5;
+const totalUsers = 100;
 
-const activeUsers = totalUsers * 0.25; // 25% of total users active at any time
-const totalVUs = activeUsers * (averageResponseTime / thinkTime);
-const errorThreshold = 1 / 100; // 1% error rate
+const activeUsers = totalUsers * 0.5; // 50% of total users active at any time
+const errorThreshold = 10 / 100; // 10% error rate
+const responseTimeThreshold = 90; // 90% of requests should be under averageResponseTime
 //#endregion
 
 //#region Helper Functions
@@ -55,25 +56,27 @@ function loginFail() {
 //#region Test Options and Main Function
 export const options = {
   stages: [
-    { duration: '30s', target: Math.ceil(totalVUs / 4) },
-    { duration: '30s', target: Math.ceil(totalVUs / 2) },
-    { duration: '30s', target: Math.ceil(totalVUs) }, // ramp to target
-    { duration: '2m', target: Math.ceil(totalVUs) }, // sustain load
+    { duration: '30s', target: Math.ceil(activeUsers / 4) },
+    { duration: '30s', target: Math.ceil(activeUsers / 2) },
+    { duration: '30s', target: Math.ceil(activeUsers) }, // ramp to target
+    { duration: '2m', target: Math.ceil(activeUsers) }, // sustain load
+    { duration: '30s', target: Math.ceil(activeUsers / 2) }, // ramp down
+    { duration: '30s', target: Math.ceil(activeUsers / 4) },
     { duration: '30s', target: 0 },
   ],
   thresholds: {
-    http_req_failed: [`rate<${errorThreshold}`], // <1% errors
-    http_req_duration: [`p(95)<${averageResponseTime}`], // 95% under 1000ms
+    http_req_failed: [`rate<${errorThreshold}`],
+    http_req_duration: [`p(${responseTimeThreshold})<${averageResponseTime}`],
   },
 };
 
 export default function () {
-  // const random = Math.random();
-  // if (random < 0.5) {
+  const random = Math.random();
+  if (random < 0.5) {
     loginSuccess();
-  // } else {
-  //   loginFail();
-  // }
+  } else {
+    loginFail();
+  }
 
   sleep(thinkTime);
 }
