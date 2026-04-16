@@ -2,8 +2,8 @@ import { check, sleep } from 'k6';
 import http from 'k6/http';
 
 //#region Test Configuration
-const apiUrl = 'https://api.betguardpredictions.com';
-// const apiUrl = 'https://zenlabs-betguard.onrender.com';
+const apiUrl = 'https://api.bedguardpredictions.com';
+// const apiUrl = 'https://zentabs-bedguard.onrender.com';
 // const apiUrl = 'http://localhost:5004';
 const averageResponseTime = 1000; // milliseconds
 const thinkTime = 10; // seconds
@@ -11,7 +11,6 @@ const totalUsers = 100;
 
 const activeUsers = totalUsers * 0.5; // 50% of total users active at any time
 const passThreshold = 90 / 100; // 90% of checks must pass
-const responseTimeThreshold = 90; // 90% of requests should be under averageResponseTime
 //#endregion
 
 //#region Helper Functions
@@ -86,7 +85,7 @@ export const options = {
   ],
   thresholds: {
     checks: [`rate>${passThreshold}`],
-    http_req_duration: [`p(${responseTimeThreshold})<${averageResponseTime}`],
+    http_req_duration: [`p(90)<${averageResponseTime}`],
   },
 };
 
